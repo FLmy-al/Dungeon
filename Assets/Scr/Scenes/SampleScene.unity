@@ -344,7 +344,6 @@ MonoBehaviour:
   canvasGroup: {fileID: 358228878}
   itemName: {fileID: 1752192034}
   description: {fileID: 409480625}
-  itemType: {fileID: 1390730224}
 --- !u!225 &358228878
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -762,6 +761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   onGrid: {fileID: 0}
+  onItem: {fileID: 0}
   isOnDrag: 0
 --- !u!1 &842312269
 GameObject:

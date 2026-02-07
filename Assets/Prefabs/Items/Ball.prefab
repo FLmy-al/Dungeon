@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3031594086003669561}
   - component: {fileID: 1583867330998683865}
   - component: {fileID: 7046230307695258138}
-  - component: {fileID: 142508920654410790}
   m_Layer: 5
   m_Name: Ball
   m_TagString: Item
@@ -89,27 +88,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07aabc3f88b36b4469deaef502ca2542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackValue: 1
-  CD: 1
-  currentCD: 0
-  isActiveItem: 1
-  image: {fileID: 1583867330998683865}
   itemName: "\u7403"
   itemDescription: "\u8FD9\u662F\u4E00\u4E2A\u7403\uFF0C\u4F7F\u7528\u65F6\u5BF9\u654C\u4EBA\u9020\u62101\u70B9\u4F24\u5BB3"
---- !u!114 &142508920654410790
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6814024101488899639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bc6e53471f4abd4cbc9ab6b408cf0ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  x: 
-  y: 
-  occupy: 0
-  currentCanvas: {fileID: 0}
-  currentGrid: {fileID: 0}

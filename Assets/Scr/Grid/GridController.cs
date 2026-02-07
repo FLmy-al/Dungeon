@@ -7,10 +7,10 @@ public class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
 {
     public static int pixelSize;//物品/网格大小
 
-    private int x;
-    private int y;
-    public Grid gridPrefab;
-    public List<Grid> grids;
+    private int x;//网格宽度
+    private int y;//网格高度
+    public Grid gridPrefab;//网格预制体索引
+    public List<Grid> grids;//该控制器下的网格
 
     private void Awake()
     {
@@ -39,7 +39,7 @@ public class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
         //添加一个物品到背包
         if (CheckCanAddItem(grids[1], ItemPool.Instance.items[0]))
         {
-            ItemPool.Instance.items[0].GetComponent<ItemDragConroller>().AddItemToGrids(this, grids[1]);
+            ItemPool.Instance.items[0].AddItemToGrids(this, grids[1]);
         }
         //if (CheckCanAddItem(grids[0], ItemPool.Instance.items[1]))
         //{
@@ -75,7 +75,7 @@ public class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
     public bool CheckCanAddItem(Grid grid,Item item)
     {
         Grid currentGrid = grid;
-        for(int i = 0;i < item.GetComponent<ItemDragConroller>().occupy;i++)
+        for(int i = 0;i < item.GetOccupy();i++)
         {
             //如果网格被占用
             if(currentGrid.isUsing)
@@ -84,7 +84,7 @@ public class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
                 return false;
             }else
             {
-                currentGrid = FindGrid(grid.pos_x + item.GetComponent<ItemDragConroller>().x[i], grid.pos_y + item.GetComponent<ItemDragConroller>().y[i]);
+                currentGrid = FindGrid(grid.pos_x + item.GetPos_X(i), grid.pos_y + item.GetPos_Y(i));
                 //Debug.Log(grid.pos_x + item.GetComponent<ItemDragConroller>().x[i] + " " + grid.pos_y + item.GetComponent<ItemDragConroller>().y[i]);
             }
         }

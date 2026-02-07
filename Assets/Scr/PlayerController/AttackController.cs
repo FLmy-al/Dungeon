@@ -21,8 +21,8 @@ public class AttackController : MonoBehaviour
 
     private void Start()
     {
-        //EnterAttackNode();
-        isFighting = false;
+        EnterAttackNode();
+        isFighting = true;
     }
 
     public void ChooseEnemy(Enemy enemy)
