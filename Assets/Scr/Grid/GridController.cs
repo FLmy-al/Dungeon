@@ -41,18 +41,11 @@ public class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHan
         {
             ItemPool.Instance.items[0].AddItemToGrids(this, grids[1]);
         }
-        //if (CheckCanAddItem(grids[0], ItemPool.Instance.items[1]))
-        //{
-        //    ItemPool.Instance.items[1].GetComponent<ItemDragConroller>().AddItemToGrids(this, grids[0]);
-        //}
     }
 
     public void OnPointerEnter(PointerEventData eventData)
-    {     
-        //if(eventData.pointerEnter.tag != "Item")
-        //{
-        //    MouseController.Instance.onGrid = this;
-        //}
+    {
+        MouseController.Instance.onGrid = this;
     }
 
     public void OnPointerExit(PointerEventData eventData)

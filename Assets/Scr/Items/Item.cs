@@ -23,11 +23,12 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
 
     protected void Awake()
     {
+        image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
     }
     protected void Start()
     {
-        image = GetComponent<Image>();
+        
     }
 
     //鼠标移动到该物品上
@@ -76,6 +77,9 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     {
         if (!AttackController.Instance.isFighting)
         {
+            //关闭射线检测
+            image.raycastTarget = false;
+            //计算鼠标位置
             Vector2 MouseTransform;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     canvasTransform,
@@ -106,6 +110,8 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
                 int target_x = (int)gridTransform.x / GridController.pixelSize;
                 int target_y = -(int)gridTransform.y / GridController.pixelSize;
                 Debug.Log(gridTransform.x.ToString() + " " + gridTransform.y.ToString());
+                //开启射线检测
+                image.raycastTarget = true;
                 //添加物品
                 AddItemToGrids(MouseController.Instance.onGrid, MouseController.Instance.onGrid.FindGrid(target_x, target_y));
                 Debug.Log("拖拽结束");
@@ -116,6 +122,8 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
             }
             else
             {
+                //开启射线检测
+                image.raycastTarget = true;
                 AddItemToGrids(currentCanvas, currentGrid);
                 Debug.Log("返回原来位置");
                 Destroy(gameObject);
@@ -137,15 +145,14 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     //添加物品到
     public void AddItemToGrids(GridController gridController, Grid grid)
     {
-        Item item = GetComponent<Item>();
-        Item newitem = Instantiate(item, gridController.transform);//创建Item
+        Item newitem = Instantiate(this, gridController.transform);//创建Item
         newitem.name = gameObject.name;
         //给实例化组件赋值
         newitem.currentCanvas = gridController;
         newitem.canvasTransform = newitem.currentCanvas.GetComponent<RectTransform>();
         newitem.currentGrid = grid;
         //设置物品位置
-        newitem.transform.localPosition = new Vector2(GridController.pixelSize * grid.pos_x, -GridController.pixelSize * grid.pos_y);
+        newitem.transform.localPosition = new Vector2(GridController.pixelSize * (grid.pos_x + newitem.rectTransform.rect.width / 80 / 2), -GridController.pixelSize * (grid.pos_y + newitem.rectTransform.rect.height / 80 / 2));
         //加入背包物品列表
         PackageItems.Instance.items.Add(newitem);
         //修改网格状态
