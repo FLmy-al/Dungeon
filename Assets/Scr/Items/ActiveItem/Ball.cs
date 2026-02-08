@@ -5,6 +5,13 @@ using UnityEngine.EventSystems;
 public class Ball : ActiveItem
 {
     private int damage;
+
+    public override int ItemID => 00001;
+
+    public override string itemName => "球";
+
+    public override string itemDescription => "使用时对敌人造成伤害";
+
     public new void Start()
     {
         base.Start();

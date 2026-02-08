@@ -12,15 +12,14 @@ public abstract class ActiveItem : Item,IPointerDownHandler
         InitOccupy();
     }
 
-    protected new void Start()
+    protected void Start()
     {
-        base.Start();
         InitCD();
         currentCD = CD;
     }
     //主动效果
     public abstract void ActiveAbility();
-    //设置cd
+    //使用物品
     public bool UseItem()
     {
         if(currentCD >= CD)

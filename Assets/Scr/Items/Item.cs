@@ -1,14 +1,15 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    private Image image;//物品图片
-
-    [Header("物品详情")]
-    public string itemName;//物品名称
-    public string itemDescription;//物品描述
+    public Image image;//物品图片
+    public abstract int ItemID { get; }//物品编号
+    public abstract string itemName { get; }//物品名称
+    public abstract string itemDescription { get; }//物品描述
 
     //网格占用
     protected int[] x;
@@ -21,14 +22,25 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     private RectTransform canvasTransform;//画布的rectTransform
     private RectTransform rectTransform;//rectTransform
 
+    // 1. 网格占用相关
+    public int GetOccupyCount() => occupy; // 获取占用格子数（替代原GetOccupy，命名更清晰）
+    public int GetXAtIndex(int index) => x != null && index >= 0 && index < x.Length ? x[index] : 0; // 获取指定索引的X偏移
+    public int GetYAtIndex(int index) => y != null && index >= 0 && index < y.Length ? y[index] : 0; // 获取指定索引的Y偏移
+
+    // 2. 当前位置相关
+    public GridController GetCurrentCanvas() => currentCanvas; // 获取所在GridController
+    public Grid GetCurrentGrid() => currentGrid; // 获取所在网格原点
+    public RectTransform GetRectTransform() => rectTransform; // 获取自身RectTransform
+
+    // 3. Setter方法（用于外部赋值，比如GridController中设置物品位置）
+    public void SetCurrentCanvas(GridController canvas) => currentCanvas = canvas;
+    public void SetCurrentGrid(Grid grid) => currentGrid = grid;
+    public void SetCanvasTransform(RectTransform transform) => canvasTransform = transform;
+
     protected void Awake()
     {
         image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
-    }
-    protected void Start()
-    {
-        
     }
 
     //鼠标移动到该物品上
@@ -93,41 +105,50 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     //拖拽结束时
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!AttackController.Instance.isFighting)
+        MouseController.Instance.isOnDrag = false;
+        //开启射线检测
+        image.raycastTarget = true;
+        try
         {
-            //向目标位置添加物品
-            if (MouseController.Instance.onGrid != null)
+            if (!AttackController.Instance.isFighting)
             {
-                //获取目标位置单元格
-                canvasTransform = MouseController.Instance.onGrid.GetComponent<RectTransform>();
-                Vector2 gridTransform;
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvasTransform,
-                    eventData.position,
-                    Camera.main,
-                    out gridTransform
-                    );
-                int target_x = (int)gridTransform.x / GridController.pixelSize;
-                int target_y = -(int)gridTransform.y / GridController.pixelSize;
-                Debug.Log(gridTransform.x.ToString() + " " + gridTransform.y.ToString());
-                //开启射线检测
-                image.raycastTarget = true;
-                //添加物品
-                AddItemToGrids(MouseController.Instance.onGrid, MouseController.Instance.onGrid.FindGrid(target_x, target_y));
-                Debug.Log("拖拽结束");
-                //删除物品
-                Debug.Log("删除物品：" + gameObject.name);
-                MouseController.Instance.isOnDrag = false;
-                Destroy(gameObject);
+                //向目标位置添加物品
+                if (MouseController.Instance.onGrid != null)
+                {
+                    //获取目标位置单元格
+                    canvasTransform = MouseController.Instance.onGrid.GetComponent<RectTransform>();
+                    Vector2 gridTransform;
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                        canvasTransform,
+                        eventData.position,
+                        Camera.main,
+                        out gridTransform
+                        );
+                    int target_x = (int)gridTransform.x / GridController.pixelSize;
+                    int target_y = -(int)gridTransform.y / GridController.pixelSize;
+                    Debug.Log(gridTransform.x.ToString() + " " + gridTransform.y.ToString());
+                    //添加物品
+                    if(MouseController.Instance.onGrid.CheckCanAddItem(this, MouseController.Instance.onGrid.FindGrid(target_x, target_y)))
+                    {
+                        MouseController.Instance.onGrid.AddItemToTargetGrid(this, MouseController.Instance.onGrid.FindGrid(target_x, target_y));
+                    }
+                    Debug.Log("拖拽结束");
+                    //删除物品
+                    Debug.Log("删除物品：" + gameObject.name);
+                    Destroy(gameObject);
+                    return;
+                }
+                else
+                {
+                    ReturnToOriginalPosition();
+                    return;
+                }
             }
-            else
-            {
-                //开启射线检测
-                image.raycastTarget = true;
-                AddItemToGrids(currentCanvas, currentGrid);
-                Debug.Log("返回原来位置");
-                Destroy(gameObject);
-            }
+        }
+        catch (NullReferenceException ex)
+        {
+            Debug.Log(message:  ex.Message);
+            ReturnToOriginalPosition();
         }
     }
     //清理物品占用
@@ -142,40 +163,25 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
             Debug.Log("已清理" + currentGrid.pos_x + x[i] + "_" + currentGrid.pos_y + y[i]);
         }
     }
-    //添加物品到
-    public void AddItemToGrids(GridController gridController, Grid grid)
+
+    private void ReturnToOriginalPosition()
     {
-        Item newitem = Instantiate(this, gridController.transform);//创建Item
-        newitem.name = gameObject.name;
-        //给实例化组件赋值
-        newitem.currentCanvas = gridController;
-        newitem.canvasTransform = newitem.currentCanvas.GetComponent<RectTransform>();
-        newitem.currentGrid = grid;
-        //设置物品位置
-        newitem.transform.localPosition = new Vector2(GridController.pixelSize * (grid.pos_x + newitem.rectTransform.rect.width / 80 / 2), -GridController.pixelSize * (grid.pos_y + newitem.rectTransform.rect.height / 80 / 2));
-        //加入背包物品列表
-        PackageItems.Instance.items.Add(newitem);
-        //修改网格状态
-        Grid changeGrid = grid;
-        for (int i = 0; i < newitem.occupy; i++)
+        if (currentCanvas != null && currentGrid != null)
         {
-            changeGrid = gridController.FindGrid(grid.pos_x + newitem.x[i], grid.pos_y + newitem.y[i]);
-            changeGrid.isUsing = true;
+            if (currentCanvas.CheckCanAddItem(this,currentGrid))
+            {
+                currentCanvas.AddItemToTargetGrid(this, currentGrid);
+            }
+            Debug.Log("物品返回原位置");
         }
-    }
+        else
+        {
+            Debug.LogWarning("无法返回原位置：currentCanvas或currentGrid为null");
+        }
 
-    public int GetOccupy()
-    {
-        return occupy;
-    }
-
-    public int GetPos_X(int index)
-    {
-        return x[index];
-    }
-
-    public int GetPos_Y(int index)
-    {
-        return y[index];
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
     }
 }
