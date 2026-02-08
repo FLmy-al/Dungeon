@@ -12,10 +12,14 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     protected abstract int y { get; }//网格高度
     public Grid gridPrefab;//网格预制体索引
     private List<Grid> grids;//该控制器下的网格
+    private List<Item> items;//该网格中的物品
+
+    public List<Item> GetItems() => items;
 
     private void Awake()
     {
         grids = new List<Grid>();
+        items = new List<Item>();
         //初始化网格
         for(int i = 0; i < x; i++)
         {
@@ -65,23 +69,15 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     //添加一个物品到网格
     public bool AddItemToGrid(Item item)
     {
-        try
+        foreach (Grid grid in grids)
         {
-            foreach (Grid grid in grids)
+            if (CheckCanAddItem(item, grid))
             {
-                if(CheckCanAddItem(item,grid))
-                {
-                    AddItemToTargetGrid(item,grid);
-                    return true;
-                }
+                AddItemToTargetGrid(item, grid);
+                return true;
             }
-            return false;
         }
-        catch (NullReferenceException ex)
-        {
-            Debug.LogError($"数组格子越界：{ex.Message}"); // 输出：Index was outside the bounds of the array.
-            return false;
-        }
+        return false;
     }
     //检查是否可以放置
     public bool CheckCanAddItem(Item item,Grid grid)
@@ -116,8 +112,6 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         newitem.SetCurrentGrid(grid);
         //设置物品位置
         newitem.transform.localPosition = new Vector2(pixelSize * (grid.pos_x + newitem.GetRectTransform().rect.width / 80 / 2), -pixelSize * (grid.pos_y + newitem.GetRectTransform().rect.height / 80 / 2));
-        //加入背包物品列表
-        PackageItems.Instance.items.Add(newitem);
         //修改网格状态
         Grid changeGrid = grid;
         for (int i = 0; i < newitem.GetOccupyCount(); i++)
@@ -125,5 +119,6 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
             changeGrid = FindGrid(grid.pos_x + newitem.GetXAtIndex(i), grid.pos_y + newitem.GetXAtIndex(i));
             changeGrid.isUsing = true;
         }
+        items.Add(newitem);
     }
 }

@@ -78,6 +78,8 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
             Debug.Log("开始拖拽");
             //清理物品占用
             ClearItemFormGrids();
+            //移除物品列表
+            currentCanvas.GetItems().Remove(this);
         }
         else
         {
@@ -154,8 +156,6 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     //清理物品占用
     public void ClearItemFormGrids()
     {
-        //清理背包列表
-        currentCanvas.GetComponent<PackageItems>().items.Remove(GetComponent<Item>());
         //清理网格
         for (int i = 0; i < occupy; i++)
         {
