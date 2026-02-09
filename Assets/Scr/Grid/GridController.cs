@@ -101,7 +101,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
                 else
                 {
                     currentGrid = FindGrid(grid.pos_x + item.GetXAtIndex(i), grid.pos_y + item.GetYAtIndex(i));
-                    Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + currentGrid.isUsing);
+                    //Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + currentGrid.isUsing);
                 }
             }catch(NullReferenceException)
             {

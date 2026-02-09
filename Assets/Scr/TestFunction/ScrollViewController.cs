@@ -9,8 +9,6 @@ public class ScrollViewController : MonoBehaviour
     public RectTransform content;
     // 拖拽赋值：列表项预制体
     public Button_AddItem itemPrefab;
-    // 列表项之间的间距（和Vertical Layout Group的Spacing一致）
-    public float itemSpacing = 10f;
 
     // 模拟数据（比如背包物品列表）
     private List<Item> itemDataList;
@@ -37,7 +35,7 @@ public class ScrollViewController : MonoBehaviour
             Button_AddItem item_AddButton = Instantiate(itemPrefab, content);
 
             item_AddButton.name = "Item_AddButton" + itemData.name;
-            item_AddButton.item = itemData;
+            item_AddButton.InitItemUI(itemData);
         }
 
         // 第三步：强制刷新Content大小（解决动态生成后大小未更新的问题）

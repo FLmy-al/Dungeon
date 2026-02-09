@@ -88,5 +88,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07aabc3f88b36b4469deaef502ca2542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemName: "\u7403"
-  itemDescription: "\u8FD9\u662F\u4E00\u4E2A\u7403\uFF0C\u4F7F\u7528\u65F6\u5BF9\u654C\u4EBA\u9020\u62101\u70B9\u4F24\u5BB3"
+  image: {fileID: 1583867330998683865}

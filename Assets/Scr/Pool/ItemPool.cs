@@ -6,7 +6,7 @@ public class ItemPool : MonoBehaviour
 {
     public static ItemPool Instance {  get; private set; }
 
-    public List<Item> items;
+    public List<Item> items = new List<Item>();
 
     private void Awake()
     {

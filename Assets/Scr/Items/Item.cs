@@ -6,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    public Image image;//物品图片
+    private Image image;//物品图片
     public abstract int ItemID { get; }//物品编号
     public abstract string itemName { get; }//物品名称
     public abstract string itemDescription { get; }//物品描述
@@ -36,6 +36,8 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     public void SetCurrentCanvas(GridController canvas) => currentCanvas = canvas;
     public void SetCurrentGrid(Grid grid) => currentGrid = grid;
     public void SetCanvasTransform(RectTransform transform) => canvasTransform = transform;
+
+    public Image GetImage() => image;
 
     protected void Awake()
     {
@@ -133,6 +135,9 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
                     if(MouseController.Instance.onGrid.CheckCanAddItem(this, MouseController.Instance.onGrid.FindGrid(target_x, target_y)))
                     {
                         MouseController.Instance.onGrid.AddItemToTargetGrid(this, MouseController.Instance.onGrid.FindGrid(target_x, target_y));
+                    }else
+                    {
+                        ReturnToOriginalPosition();
                     }
                     Debug.Log("拖拽结束");
                     //删除物品
