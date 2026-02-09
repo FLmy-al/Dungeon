@@ -21,4 +21,31 @@ public class MouseController : MonoBehaviour
         onGrid = null;
         onItem = null;
     }
+
+    private void Update()
+    {
+        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Item")
+        {
+            onItem = collision.gameObject.GetComponent<Item>();
+            if (!isOnDrag)
+            {
+                ItemDetailUI.Instance.canvasGroup.alpha = 1f;
+                ItemDetailUI.Instance.ShowItemDetail(onItem);
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Item")
+        {
+            ItemDetailUI.Instance.canvasGroup.alpha = 0f;
+            onItem = null;
+        }
+    }
 }

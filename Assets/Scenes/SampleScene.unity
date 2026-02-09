@@ -336,7 +336,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 1411693195}
   itemPrefab: {fileID: 4207321070624952089, guid: 8e5f1789b55b73346b386382b9a5c9bd, type: 3}
-  itemSpacing: 10
 --- !u!1 &240682248
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,6 +975,8 @@ GameObject:
   m_Component:
   - component: {fileID: 752095840}
   - component: {fileID: 752095841}
+  - component: {fileID: 752095843}
+  - component: {fileID: 752095842}
   m_Layer: 0
   m_Name: MouseController
   m_TagString: Untagged
@@ -992,7 +993,7 @@ Transform:
   m_GameObject: {fileID: 752095839}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1364.656, y: 581.7633, z: -4.9885173}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1013,6 +1014,68 @@ MonoBehaviour:
   onGrid: {fileID: 0}
   onItem: {fileID: 0}
   isOnDrag: 0
+--- !u!50 &752095842
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752095839}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!58 &752095843
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752095839}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 7.3704705
 --- !u!1 &842312269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,6 +1108,7 @@ MonoBehaviour:
   items:
   - {fileID: 7046230307695258138, guid: 4273e3cfc088e29409ddc31cdc0256a2, type: 3}
   - {fileID: -5972309444291495616, guid: 5fb0cefa7d991054b84dc425429767ce, type: 3}
+  - {fileID: -8115891552829225775, guid: b476d0b6da12a8a4b808e2e8db160a7c, type: 3}
 --- !u!4 &842312271
 Transform:
   m_ObjectHideFlags: 0
@@ -1646,7 +1710,7 @@ GameObject:
   - component: {fileID: 1309642356}
   - component: {fileID: 1309642355}
   m_Layer: 5
-  m_Name: Package Canvas
+  m_Name: Main Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

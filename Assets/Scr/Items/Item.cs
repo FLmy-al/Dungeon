@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
-public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
+public abstract class Item : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private Image image;//物品图片
     public abstract int ItemID { get; }//物品编号
@@ -43,23 +43,6 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     {
         image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
-    }
-
-    //鼠标移动到该物品上
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        MouseController.Instance.onItem = this;
-        if(!MouseController.Instance.isOnDrag)
-        {
-            ItemDetailUI.Instance.canvasGroup.alpha = 1f;
-            ItemDetailUI.Instance.ShowItemDetail(this);
-        }
-    }
-    //鼠标离开该物品时
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        ItemDetailUI.Instance.canvasGroup.alpha = 0f;
-        MouseController.Instance.onItem = null;
     }
 
     //设置透明度

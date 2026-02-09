@@ -32,6 +32,16 @@ public abstract class ActiveItem : Item,IPointerDownHandler
         currentCD += change;
     }
     //Êó±êµã»÷
-    public abstract void OnPointerDown(PointerEventData eventData);
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+        if (AttackController.Instance.isFighting)
+        {
+            if (UseItem())
+            {
+                ActiveAbility();
+                SetAlpha(currentCD, CD);
+            }
+        }
+    }
 
 }

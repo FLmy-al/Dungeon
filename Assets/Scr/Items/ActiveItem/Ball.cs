@@ -25,16 +25,16 @@ public class Ball : ActiveItem
         AttackController.Instance.targetEnemy.GetDamage(damage);
     }
 
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-        if(AttackController.Instance.isFighting)
-        {
-            if (UseItem())
-            {
-                ActiveAbility();
-                SetAlpha(currentCD, CD);
-            }
-        }
+    //public override void OnPointerDown(PointerEventData eventData)
+    //{
+    //    if(AttackController.Instance.isFighting)
+    //    {
+    //        if (UseItem())
+    //        {
+    //            ActiveAbility();
+    //            SetAlpha(currentCD, CD);
+    //        }
+    //    }
         
-    }
+    //}
 }
