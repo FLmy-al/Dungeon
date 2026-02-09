@@ -5,16 +5,10 @@ using UnityEngine;
 public abstract class ActiveItem : Item,IPointerDownHandler
 {
     protected int currentCD;
-    protected int CD;
-    protected new void Awake()
-    {
-        base.Awake();
-        InitOccupy();
-    }
+    protected abstract int CD { get; }
 
     protected void Start()
     {
-        InitCD();
         currentCD = CD;
     }
     //主动效果
@@ -39,9 +33,5 @@ public abstract class ActiveItem : Item,IPointerDownHandler
     }
     //鼠标点击
     public abstract void OnPointerDown(PointerEventData eventData);
-    //初始化物品大小
-    public abstract void InitOccupy();
-    //初始化CD
-    public abstract void InitCD();
 
 }

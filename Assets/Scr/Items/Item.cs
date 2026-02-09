@@ -12,9 +12,9 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     public abstract string itemDescription { get; }//物品描述
 
     //网格占用
-    protected int[] x;
-    protected int[] y;
-    protected int occupy;//该物品占用格数
+    protected abstract int[] x { get; }
+    protected abstract int[] y { get; }
+    protected abstract int occupy { get; }//该物品占用格数
 
     //当前位置
     private GridController currentCanvas;//所在画布

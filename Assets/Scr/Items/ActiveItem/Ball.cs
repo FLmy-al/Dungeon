@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 public class Ball : ActiveItem
 {
-    private int damage;
+    private int damage => 1;
 
     public override int ItemID => 00001;
 
@@ -12,21 +12,17 @@ public class Ball : ActiveItem
 
     public override string itemDescription => "使用时对敌人造成伤害";
 
-    public new void Start()
-    {
-        base.Start();
-        damage = 1;
-    }
+    protected override int[] x => new int[] { 0, 0, 1, 1 };
+
+    protected override int[] y => new int[] { 0, 1, 0, 1 };
+
+    protected override int occupy => 4;
+
+    protected override int CD => 4;
+
     public override void ActiveAbility()
     {
         AttackController.Instance.targetEnemy.GetDamage(damage);
-    }
-
-    public override void InitOccupy()
-    {
-        x = new int[] { 0, 0, 1, 1 };
-        y = new int[] { 0, 1, 0, 1 };
-        occupy = 4;
     }
 
     public override void OnPointerDown(PointerEventData eventData)
@@ -40,10 +36,5 @@ public class Ball : ActiveItem
             }
         }
         
-    }
-
-    public override void InitCD()
-    {
-        CD = 4;
     }
 }

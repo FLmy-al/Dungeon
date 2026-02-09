@@ -10,12 +10,11 @@ public class Money : PassiveItem
 
     public override string itemDescription => "可以购买物品";
 
-    public override void InitOccupy()
-    {
-        x = new int[] { 0 };
-        y = new int[] { 0 };
-        occupy = 1;
-    }
+    protected override int[] x => new int[] { 0 };
+
+    protected override int[] y => new int[] { 0 };
+
+    protected override int occupy => 1;
 
     public override void PassiveAbility()
     {

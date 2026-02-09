@@ -85,17 +85,24 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         Grid currentGrid = grid;
         for (int i = 0; i < item.GetOccupyCount(); i++)
         {
-            //如果网格被占用
-            if (currentGrid.isUsing)
+            try
             {
-                Debug.Log("被占用，无法放置");
+                //如果网格被占用
+                if (currentGrid.isUsing)
+                {
+                    Debug.Log("被占用，无法放置");
+                    return false;
+                }
+                else
+                {
+                    currentGrid = FindGrid(currentGrid.pos_x + item.GetXAtIndex(i), currentGrid.pos_y + item.GetYAtIndex(i));
+                    //Debug.Log(grid.pos_x + item.GetComponent<ItemDragConroller>().x[i] + " " + grid.pos_y + item.GetComponent<ItemDragConroller>().y[i]);
+                }
+            }catch(NullReferenceException)
+            {
                 return false;
             }
-            else
-            {
-                currentGrid = FindGrid(currentGrid.pos_x + item.GetXAtIndex(i), currentGrid.pos_y + item.GetYAtIndex(i));
-                //Debug.Log(grid.pos_x + item.GetComponent<ItemDragConroller>().x[i] + " " + grid.pos_y + item.GetComponent<ItemDragConroller>().y[i]);
-            }
+            
         }
         Debug.Log("可以放置");
         return true;
@@ -105,7 +112,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     public void AddItemToTargetGrid(Item item, Grid grid)
     {
         Item newitem = Instantiate(item, transform);//创建Item
-        newitem.name = gameObject.name;
+        newitem.name = item.name;
         //给实例化组件赋值
         newitem.SetCurrentCanvas(this);
         newitem.SetCanvasTransform(GetComponent<RectTransform>());
@@ -116,7 +123,8 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         Grid changeGrid = grid;
         for (int i = 0; i < newitem.GetOccupyCount(); i++)
         {
-            changeGrid = FindGrid(grid.pos_x + newitem.GetXAtIndex(i), grid.pos_y + newitem.GetXAtIndex(i));
+            Debug.Log(newitem.GetOccupyCount());
+            changeGrid = FindGrid(grid.pos_x + newitem.GetXAtIndex(i), grid.pos_y + newitem.GetYAtIndex(i));
             changeGrid.isUsing = true;
         }
         items.Add(newitem);

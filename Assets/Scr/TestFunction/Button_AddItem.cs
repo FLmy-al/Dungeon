@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AddItemToPackage : MonoBehaviour
+public class Button_AddItem : MonoBehaviour
 {
     public Item item;
 
@@ -14,13 +14,15 @@ public class AddItemToPackage : MonoBehaviour
     private void Start()
     {
         image = GetComponent<Image>();
-        itemName = GetComponent<TMP_Text>();
+        itemName = GetComponentInChildren<TMP_Text>();
 
         image = item.image;
         itemName.text = item.name;
     }
     public void PutDown()
     {
-        
+        PackageManager package = FindAnyObjectByType<PackageManager>();
+
+        package.AddItemToGrid(item);
     }
 }
