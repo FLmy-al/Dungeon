@@ -26,10 +26,10 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
             for(int j = 0; j < y; j++)
             {
                 Grid newgrid = Instantiate(gridPrefab, transform);
-                newgrid.transform.localPosition = new Vector2(i * pixelSize, -j * pixelSize);
-                newgrid.name = "grid_" + i + "_" + j;
-                newgrid.GetComponent<Grid>().pos_x = i;
-                newgrid.GetComponent<Grid>().pos_y = j;
+                newgrid.transform.localPosition = new Vector2(j * pixelSize, -i * pixelSize);
+                newgrid.name = "grid_" + j + "_" + i;
+                newgrid.GetComponent<Grid>().pos_x = j;
+                newgrid.GetComponent<Grid>().pos_y = i;
                 grids.Add(newgrid);
                 Debug.Log("创建" + newgrid.name);
             }
@@ -57,7 +57,12 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     //寻找网格
     public Grid FindGrid(int x, int y)
     {
-        foreach(Grid grid in grids)
+        // 提前检查坐标是否超出网格范围
+        if (x < 0 || x >= this.x || y < 0 || y >= this.y)
+        {
+            return null;
+        }
+        foreach (Grid grid in grids)
         {
             if(grid.pos_x == x && grid.pos_y == y)
             {
@@ -95,11 +100,12 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
                 }
                 else
                 {
-                    currentGrid = FindGrid(currentGrid.pos_x + item.GetXAtIndex(i), currentGrid.pos_y + item.GetYAtIndex(i));
-                    //Debug.Log(grid.pos_x + item.GetComponent<ItemDragConroller>().x[i] + " " + grid.pos_y + item.GetComponent<ItemDragConroller>().y[i]);
+                    currentGrid = FindGrid(grid.pos_x + item.GetXAtIndex(i), grid.pos_y + item.GetYAtIndex(i));
+                    Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + currentGrid.isUsing);
                 }
             }catch(NullReferenceException)
             {
+                Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + "超出范围，无法放置");
                 return false;
             }
             
@@ -123,7 +129,6 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         Grid changeGrid = grid;
         for (int i = 0; i < newitem.GetOccupyCount(); i++)
         {
-            Debug.Log(newitem.GetOccupyCount());
             changeGrid = FindGrid(grid.pos_x + newitem.GetXAtIndex(i), grid.pos_y + newitem.GetYAtIndex(i));
             changeGrid.isUsing = true;
         }
