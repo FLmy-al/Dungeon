@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Button_AddItem : MonoBehaviour
 {
     private Item item;
-    private Image image;
+    [SerializeField] private Image image;
     private TMP_Text itemName;
 
     private void Awake()

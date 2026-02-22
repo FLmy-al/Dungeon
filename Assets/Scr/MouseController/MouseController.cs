@@ -9,6 +9,7 @@ public class MouseController : MonoBehaviour
     public GridController onGrid;
     public Item onItem;
     public bool isOnDrag;
+    public Item currentDragItem;
 
     private void Awake()
     {

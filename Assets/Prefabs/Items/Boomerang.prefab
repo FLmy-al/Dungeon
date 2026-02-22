@@ -88,4 +88,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0700942af52df4b93939a20ac31417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 3015514009763698321}
   alphaThreshold: 0.1

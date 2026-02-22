@@ -8,9 +8,14 @@ public class Grid : MonoBehaviour
     public int pos_x;
     public int pos_y;
     private GridController parent;
+    private Item currentItem;
 
+    public Item GetCurrentItem() => currentItem;
+    public void SetCurrentItem(Item item) => currentItem = item;
     private void Awake()
     {
         isUsing = false;
     }
+
+
 }

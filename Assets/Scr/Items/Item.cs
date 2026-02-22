@@ -2,21 +2,19 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-// 移除无用的命名空间引用
-// using static UnityEngine.GraphicsBuffer;
 
 public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,
     IDragHandler, IBeginDragHandler, IEndDragHandler,
-    ICanvasRaycastFilter // 新增：实现射线检测过滤接口
+    ICanvasRaycastFilter
 {
-    private Image image;//物品图片
+    [SerializeField]private Image image;//物品图片
     public abstract int ItemID { get; }//物品编号
     public abstract string itemName { get; }//物品名称
     public abstract string itemDescription { get; }//物品描述
 
     //网格占用
-    protected abstract int[] x { get; }
-    protected abstract int[] y { get; }
+    protected abstract int[] x { get; set; }
+    protected abstract int[] y { get; set; }
     protected abstract int occupy { get; }//该物品占用格数
 
     //当前位置
@@ -30,6 +28,10 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     // 新增：缓存纹理像素数据，避免重复读取
     private Color[] pixelData;
     private Texture2D itemTexture;
+
+    [Header("旋转配置")]
+    [SerializeField] private float currentRotation = 0f; // 当前旋转角度（Z轴）
+    private const float RotateStep = 90f; // 每次顺时针旋转90度
 
     // 1. 网格占用相关
     public int GetOccupyCount() => occupy; // 获取占用格子数（替代原GetOccupy，命名更清晰）
@@ -52,12 +54,88 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     {
         image = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
-
-        // 新增：初始化纹理和像素数据
+        // 确保旋转围绕物品中心（Pivot设为0.5,0.5，避免旋转偏移）
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        //初始化纹理和像素数据
         InitTextureData();
     }
 
-    // 新增：初始化纹理数据（关键）
+    private void Update()
+    {
+        // 仅拖拽中、非战斗时响应右键
+        if (MouseController.Instance.isOnDrag && MouseController.Instance.currentDragItem == this)
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                RotateItemClockwise();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 物品顺时针旋转90度，并更新网格占用偏移
+    /// </summary>
+    private void RotateItemClockwise()
+    {
+        // 1. 顺时针旋转90度（UGUI的Z轴旋转：负值=顺时针，正值=逆时针）
+        currentRotation -= RotateStep;
+        currentRotation = Mathf.Round(currentRotation % 360); // 取模360，避免角度累积过大
+        rectTransform.localEulerAngles = new Vector3(0, 0, currentRotation);
+
+        // 2. 更新网格占用偏移（子类需重写此方法实现具体的偏移旋转）
+        UpdateOccupyGridOnRotate();
+
+        Debug.Log($"[{itemName}] 顺时针旋转90度，当前角度：{currentRotation}°");
+    }
+
+    /// <summary>
+    /// 绕形状中心顺时针旋转90度后的占用偏移（与图片绕 pivot 中心旋转一致，避免绕(0,0)导致显示错位）
+    /// 步骤：求形心 → 相对形心旋转 → 归一化到最小为(0,0)
+    /// </summary>
+    protected (int[] newX, int[] newY) ComputeRotatedOffsetsAroundCenter()
+    {
+        if (occupy <= 0 || x == null || y == null) return (null, null);
+        float cx = 0f, cy = 0f;
+        for (int i = 0; i < occupy; i++)
+        {
+            cx += GetXAtIndex(i);
+            cy += GetYAtIndex(i);
+        }
+        cx /= occupy;
+        cy /= occupy;
+
+        int[] nx = new int[occupy];
+        int[] ny = new int[occupy];
+        int minNx = int.MaxValue, minNy = int.MaxValue;
+        for (int i = 0; i < occupy; i++)
+        {
+            float dx = GetXAtIndex(i) - cx;
+            float dy = GetYAtIndex(i) - cy;
+            // 顺时针90度（X右Y下）：(dx,dy) -> (-dy, dx)
+            nx[i] = Mathf.RoundToInt(cx - dy);
+            ny[i] = Mathf.RoundToInt(cy + dx);
+            if (nx[i] < minNx) minNx = nx[i];
+            if (ny[i] < minNy) minNy = ny[i];
+        }
+        for (int i = 0; i < occupy; i++)
+        {
+            nx[i] -= minNx;
+            ny[i] -= minNy;
+        }
+        return (nx, ny);
+    }
+
+    /// <summary>
+    /// 实现旋转后网格偏移的更新逻辑（子类应使用绕中心旋转以与图片一致）
+    /// </summary>
+    protected abstract void UpdateOccupyGridOnRotate();
+
+    /// <summary>
+    /// 从另一个物品深拷贝占用偏移（放置时保证新实例的网格形状与传入物品一致，例如旋转后的状态）
+    /// </summary>
+    public abstract void CopyOccupancyFrom(Item other);
+
+    //初始化纹理数据（关键）
     private void InitTextureData()
     {
         if (image == null || image.sprite == null || image.sprite.texture == null)
@@ -110,6 +188,7 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
         if (!AttackController.Instance.isFighting)
         {
             MouseController.Instance.isOnDrag = true;
+            MouseController.Instance.currentDragItem = this;
             Debug.Log("开始拖拽");
             // 清理物品占用
             ClearItemFormGrids();
@@ -145,6 +224,7 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
     public void OnEndDrag(PointerEventData eventData)
     {
         MouseController.Instance.isOnDrag = false;
+        MouseController.Instance.currentDragItem = null;
         // 开启射线检测
         image.raycastTarget = true;
         try

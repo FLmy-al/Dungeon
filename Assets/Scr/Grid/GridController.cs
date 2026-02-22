@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.GraphicsBuffer;
 
 public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
@@ -55,19 +57,20 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         MouseController.Instance.onGrid = null;
     }
     //寻找网格
-    public Grid FindGrid(int x, int y)
+    public Grid FindGrid(int targetX, int targetY)
     {
-        // 提前检查坐标是否超出网格范围
-        if (x < 0 || x >= this.x || y < 0 || y >= this.y)
+        // 提前检查坐标是否超出网格范围（X=列，Y=行）
+        if (targetX < 0 || targetX >= this.y || targetY < 0 || targetY >= this.x)
         {
+            Debug.LogWarning($"网格坐标({targetX},{targetY})超出范围（宽={this.y}, 高={this.x}）");
             return null;
         }
-        foreach (Grid grid in grids)
+
+        // 计算索引：行*列数 + 列
+        int index = targetY * this.y + targetX;
+        if (index >= 0 && index < grids.Count)
         {
-            if(grid.pos_x == x && grid.pos_y == y)
-            {
-                return grid;
-            }
+            return grids[index];
         }
         return null;
     }
@@ -85,52 +88,60 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         return false;
     }
     //检查是否可以放置
-    public bool CheckCanAddItem(Item item,Grid grid)
+    public bool CheckCanAddItem(Item item,Grid originGrid)
     {
-        Grid currentGrid = grid;
+        Grid currentGrid = originGrid;
         for (int i = 0; i < item.GetOccupyCount(); i++)
         {
-            try
+            // 计算当前格子的绝对坐标（原点+偏移）
+            int targetX = originGrid.pos_x + item.GetXAtIndex(i);
+            int targetY = originGrid.pos_y + item.GetYAtIndex(i);
+
+            // 1. 找目标格子
+            Grid targetGrid = FindGrid(targetX, targetY);
+            if (targetGrid == null)
             {
-                //如果网格被占用
-                if (currentGrid.isUsing)
-                {
-                    Debug.Log("被占用，无法放置");
-                    return false;
-                }
-                else
-                {
-                    currentGrid = FindGrid(grid.pos_x + item.GetXAtIndex(i), grid.pos_y + item.GetYAtIndex(i));
-                    //Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + currentGrid.isUsing);
-                }
-            }catch(NullReferenceException)
-            {
-                Debug.Log((grid.pos_x + item.GetXAtIndex(i)) + " " + (grid.pos_y + item.GetYAtIndex(i)) + "超出范围，无法放置");
+                Debug.Log($"物品{item.itemName}的格子({targetX},{targetY})超出网格范围，无法放置");
                 return false;
             }
-            
+
+            // 2. 检查格子是否被占用
+            if (targetGrid.isUsing)
+            {
+                Debug.Log($"物品{item.itemName}的格子({targetX},{targetY})已被占用，无法放置");
+                return false;
+            }
+
         }
         Debug.Log("可以放置");
         return true;
     }
 
-    //添加物品到指定网格
-    public void AddItemToTargetGrid(Item item, Grid grid)
+    //添加物品到指定网格（使用传入 item 的占用偏移，确保旋转后的格子正确）
+    public void AddItemToTargetGrid(Item item, Grid originGrid)
     {
         Item newitem = Instantiate(item, transform);//创建Item
         newitem.name = item.name;
+        newitem.CopyOccupancyFrom(item); // 同步旋转后的占用格子，保证网格与图片一致
         //给实例化组件赋值
         newitem.SetCurrentCanvas(this);
         newitem.SetCanvasTransform(GetComponent<RectTransform>());
-        newitem.SetCurrentGrid(grid);
+        newitem.SetCurrentGrid(originGrid);
         //设置物品位置
-        newitem.transform.localPosition = new Vector2(pixelSize * (grid.pos_x + newitem.GetRectTransform().rect.width / 80 / 2), -pixelSize * (grid.pos_y + newitem.GetRectTransform().rect.height / 80 / 2));
-        //修改网格状态
-        Grid changeGrid = grid;
-        for (int i = 0; i < newitem.GetOccupyCount(); i++)
+        newitem.transform.localPosition = new Vector2(pixelSize * (originGrid.pos_x + newitem.GetRectTransform().rect.width / pixelSize / 2), -pixelSize * (originGrid.pos_y + newitem.GetRectTransform().rect.height / pixelSize / 2));
+        // 使用传入 item 的占用偏移标记网格（保证旋转后的形状与图片一致，避免 Instantiate 浅拷贝导致引用混乱）
+        for (int i = 0; i < item.GetOccupyCount(); i++)
         {
-            changeGrid = FindGrid(grid.pos_x + newitem.GetXAtIndex(i), grid.pos_y + newitem.GetYAtIndex(i));
-            changeGrid.isUsing = true;
+            int targetX = originGrid.pos_x + item.GetXAtIndex(i);
+            int targetY = originGrid.pos_y + item.GetYAtIndex(i);
+
+            Grid targetGrid = FindGrid(targetX, targetY);
+            if (targetGrid != null)
+            {
+                targetGrid.isUsing = true;
+                targetGrid.SetCurrentItem(newitem);
+                Debug.Log($"标记格子({targetX},{targetY})为已使用，物品：{newitem.itemName}");
+            }
         }
         items.Add(newitem);
     }
