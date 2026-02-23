@@ -8,9 +8,21 @@ public class EnemyController : MonoBehaviour
 
     public List<Enemy> enemies = new List<Enemy>();
 
+    public List<GameObject> enemySpawns = new List<GameObject>();
+
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void OnEnable()
+    {
+        EventManager.Instance.RegisterEvent(EventTypes.FightStartEvent, SpawnEnemies);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.Instance.UnregisterEvent(EventTypes.FightStartEvent, SpawnEnemies);
     }
 
     public void ReduceEnemyAttackTime()
@@ -41,6 +53,22 @@ public class EnemyController : MonoBehaviour
                 enemy.currentAttackTime = enemy.attackTime;
             }
             enemy.currentAttackTimeText.text = enemy.currentAttackTime.ToString();
+        }
+    }
+    //从字典中随机取一组敌人生成
+    public void SpawnEnemies(IEvent @event)
+    {
+        List<Enemy> enemies = EnemyPool.instance.EnemyGroupsDict[Random.Range(1, EnemyPool.instance.EnemyGroupsDict.Count)];
+        for(int i = 0; i < enemies.Count; i++ )
+        {
+            // 确保生成点足够
+            if (i >= enemySpawns.Count)
+            {
+                Debug.LogError("生成点不足，无法生成所有敌人！");
+                break;
+            }
+            Enemy enemy = Instantiate(enemies[i], enemySpawns[i].transform.position,Quaternion.identity);
+            this.enemies.Add(enemy);
         }
     }
 }

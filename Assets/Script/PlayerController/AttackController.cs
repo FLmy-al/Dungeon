@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AttackController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class AttackController : MonoBehaviour
     public TargetSprite targetSprite;
     private TargetSprite currentTargetSprite;
     public bool isFighting;
+    public Button StartFightButton;
 
     private void Awake()
     {
@@ -61,5 +63,6 @@ public class AttackController : MonoBehaviour
     {
         isFighting = false;
         Destroy(currentTargetSprite);
+        StartFightButton.gameObject.SetActive(true);
     }
 }

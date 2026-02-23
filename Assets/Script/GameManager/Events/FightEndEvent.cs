@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FightEndEvent : MonoBehaviour,IEvent
+public class FightEndEvent : IEvent
 {
 
 }

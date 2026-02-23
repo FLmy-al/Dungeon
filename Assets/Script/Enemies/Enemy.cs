@@ -23,7 +23,6 @@ public class Enemy : MonoBehaviour
         HPSlider.value = currentHP;
         HP_Text.text = currentHP.ToString() + "/" + maxHP.ToString();
 
-        EnemyController.Instance.enemies.Add(this);//加入列表
         isAlive = true;
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemPool", menuName = "Pool")]
+[CreateAssetMenu(fileName = "ItemPool", menuName = "ItemPool")]
 public class ItemPool : ScriptableObject
 {
     public static ItemPool Instance {  get; private set; }
