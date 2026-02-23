@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum EventTypes
 {
-    FightStartEvent //战斗开始
+    FightStartEvent,//战斗开始
+    FightEndEvent
 }
  

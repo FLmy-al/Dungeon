@@ -21,15 +21,25 @@ public class AttackController : MonoBehaviour
 
     private void Start()
     {
-        //EnterAttackNode();
         isFighting = false;
+    }
+
+    private void OnEnable()
+    {
+        EventManager.Instance.RegisterEvent(EventTypes.FightStartEvent, EnterAttackNode);//注册监听战斗开始事件
+        EventManager.Instance.RegisterEvent(EventTypes.FightEndEvent, ExitAttackNode);//注册监听战斗结束事件
+    }
+
+    private void OnDisable()
+    {
+        EventManager.Instance.UnregisterEvent(EventTypes.FightStartEvent, EnterAttackNode);//取消监听战斗开始事件
+        EventManager.Instance.UnregisterEvent(EventTypes.FightEndEvent, ExitAttackNode);//取消监听战斗结束事件
     }
 
     public void ChooseEnemy(Enemy enemy)
     {
-        Destroy(currentTargetSprite.gameObject);
         targetEnemy = enemy;
-        currentTargetSprite = Instantiate(targetSprite, targetEnemy.transform);
+        currentTargetSprite.transform.position = targetEnemy.transform.position;
     }
 
     //设置默认目标敌人
@@ -40,15 +50,16 @@ public class AttackController : MonoBehaviour
     }
 
     //进入战斗节点
-    private void EnterAttackNode()
+    public void EnterAttackNode(IEvent @event)
     {
         isFighting = true;
         DefaultTargetEnemy();
     }
 
     //退出战斗节点
-    private void ExitAttackNode()
+    private void ExitAttackNode(IEvent @event)
     {
-
+        isFighting = false;
+        Destroy(currentTargetSprite);
     }
 }

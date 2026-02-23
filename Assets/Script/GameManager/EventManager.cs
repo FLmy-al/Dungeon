@@ -14,7 +14,7 @@ public class EventManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -22,6 +22,7 @@ public class EventManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         //初始化字典
         _eventBus = new Dictionary<EventTypes, Action<IEvent>>();
+        Debug.Log("初始化事件监听器");
     }
 
     //注册事件监听

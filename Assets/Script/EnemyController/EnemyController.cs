@@ -15,6 +15,11 @@ public class EnemyController : MonoBehaviour
 
     public void ReduceEnemyAttackTime()
     {
+        if(enemies.Count <= 0)
+        {
+            EventManager.Instance.TriggerEvent(EventTypes.FightEndEvent, new FightEndEvent());
+        }
+
         foreach(Enemy enemy in enemies)
         {
             enemy.currentAttackTime--;
