@@ -12,7 +12,6 @@ public class Enemy : MonoBehaviour
     public int currentAttackTime;//剩余攻击间隔
     public Slider HPSlider;//血量条
     public TMP_Text HP_Text;//血量Text
-    public bool isAlive;//存活状态
     public TMP_Text currentAttackTimeText;//剩余攻击间隔Text
 
     private void Start()
@@ -22,18 +21,11 @@ public class Enemy : MonoBehaviour
         HPSlider.maxValue = maxHP;
         HPSlider.value = currentHP;
         HP_Text.text = currentHP.ToString() + "/" + maxHP.ToString();
-
-        isAlive = true;
     }
 
     //点击事件
     private void OnMouseDown()
     {
-        if(!isAlive)
-        {
-            return;
-        }
-
         AttackController.Instance.ChooseEnemy(this); //攻击目标切换
 
         Debug.Log("当前目标为：" + name);
@@ -41,11 +33,6 @@ public class Enemy : MonoBehaviour
 
     public void GetDamage(int damage)
     {
-        if (!isAlive)
-        {
-            return;
-        }
-
         currentHP -= damage;
         HPSlider.value = currentHP;
         HP_Text.text = currentHP.ToString() + "/" + maxHP.ToString();
@@ -53,7 +40,6 @@ public class Enemy : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            isAlive = false;
             EnemyController.Instance.enemies.Remove(this);//移出列表
             if(EnemyController.Instance.enemies.Count > 0)
             {
@@ -70,13 +56,24 @@ public class Enemy : MonoBehaviour
 
     public virtual void Attack()
     {
-        if (!isAlive)
-        {
-            return;
-        }
-
         Debug.Log("EnemyAttack");
         //敌人攻击效果
         PlayerHPController.Instance.GetDamage(5);
+    }
+
+    public void ReduceAttackTime()
+    {
+        if(currentHP > 0)
+        {
+            currentAttackTime--;
+            currentAttackTimeText.text = currentAttackTime.ToString();
+
+            //敌人行动
+            if (currentAttackTime <= 0)
+            {
+                Attack();
+                currentAttackTime = attackTime;
+            }
+        }
     }
 }

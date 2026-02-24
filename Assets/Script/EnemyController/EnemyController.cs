@@ -12,49 +12,31 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("2222");
         Instance = this;
-    }
-
-    private void Start()
-    {
-        Debug.Log("1111");
     }
 
     private void OnEnable()
     {
-        Debug.Log("3333");
         EventManager.Instance.RegisterEvent(EventTypes.FightStartEvent, SpawnEnemies);
+        EventManager.Instance.RegisterEvent(EventTypes.UseItemEvent, ReduceEnemyAttackTime);
     }
 
     private void OnDisable()
     {
         EventManager.Instance.UnregisterEvent(EventTypes.FightStartEvent, SpawnEnemies);
+        EventManager.Instance.UnregisterEvent(EventTypes.UseItemEvent, ReduceEnemyAttackTime);
     }
 
-    public void ReduceEnemyAttackTime()
+    public void ReduceEnemyAttackTime(IEvent @event)
     {
         foreach(Enemy enemy in enemies)
         {
-            enemy.currentAttackTime--;
+            enemy.ReduceAttackTime();
             
             if (enemy == null || enemy.currentHP <= 0)
             {
                 continue;
             }
-
-            //敌人行动
-            if (enemy.currentAttackTime <= 0 && enemy.currentHP > 0)
-            {
-                enemy.Attack();
-            }
-
-            //更新敌人行动间隔
-            if (enemy.currentAttackTime <= 0)
-            {
-                enemy.currentAttackTime = enemy.attackTime;
-            }
-            enemy.currentAttackTimeText.text = enemy.currentAttackTime.ToString();
         }
     }
     //从字典中随机取一组敌人生成
