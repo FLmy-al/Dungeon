@@ -60,6 +60,11 @@ public class Enemy : MonoBehaviour
                 AttackController.Instance.DefaultTargetEnemy();//ÇÐ»»Ä¿±êµÐÈË
             }
             Destroy(gameObject,0.1f);
+
+            if (EnemyController.Instance.enemies.Count <= 0)
+            {
+                EventManager.Instance.TriggerEvent(EventTypes.FightEndEvent, new FightEndEvent());
+            }
         }
     }
 

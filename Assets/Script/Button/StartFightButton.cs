@@ -6,7 +6,6 @@ public class StartFightButton : MonoBehaviour
 {
     public void PutDown()
     {
-        EnemyController.Instance.SpawnEnemies(null);
         EventManager.Instance.TriggerEvent(EventTypes.FightStartEvent, new FightStartEvent());
         gameObject.SetActive(false);
     }

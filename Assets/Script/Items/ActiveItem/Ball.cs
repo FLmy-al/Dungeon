@@ -8,6 +8,7 @@ public class Ball : ActiveItem
     private int[] _x = new int[] { 0, 1 ,0 ,1};
     private int[] _y = new int[] { 0, 0 ,1 ,1};
     private int damage => 1;
+    private int _CD = 4;
 
     public override int ItemID => 00001;
 
@@ -21,7 +22,8 @@ public class Ball : ActiveItem
 
     protected override int occupy => 4;
 
-    protected override int CD => 4;
+    protected override int CD { get => _CD; set => _CD = value; }
+
 
     public override void ActiveAbility()
     {

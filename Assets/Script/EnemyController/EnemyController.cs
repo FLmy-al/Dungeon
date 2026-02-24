@@ -12,11 +12,18 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("2222");
         Instance = this;
+    }
+
+    private void Start()
+    {
+        Debug.Log("1111");
     }
 
     private void OnEnable()
     {
+        Debug.Log("3333");
         EventManager.Instance.RegisterEvent(EventTypes.FightStartEvent, SpawnEnemies);
     }
 
@@ -27,11 +34,6 @@ public class EnemyController : MonoBehaviour
 
     public void ReduceEnemyAttackTime()
     {
-        if(enemies.Count <= 0)
-        {
-            EventManager.Instance.TriggerEvent(EventTypes.FightEndEvent, new FightEndEvent());
-        }
-
         foreach(Enemy enemy in enemies)
         {
             enemy.currentAttackTime--;
@@ -58,6 +60,7 @@ public class EnemyController : MonoBehaviour
     //从字典中随机取一组敌人生成
     public void SpawnEnemies(IEvent @event)
     {
+        Debug.Log("生成敌人");
         List<Enemy> enemies = EnemyPool.instance.EnemyGroupsDict[Random.Range(1, EnemyPool.instance.EnemyGroupsDict.Count)];
         for(int i = 0; i < enemies.Count; i++ )
         {
@@ -65,7 +68,7 @@ public class EnemyController : MonoBehaviour
             if (i >= enemySpawns.Count)
             {
                 Debug.LogError("生成点不足，无法生成所有敌人！");
-                break;
+                return;
             }
             Enemy enemy = Instantiate(enemies[i], enemySpawns[i].transform.position,Quaternion.identity);
             this.enemies.Add(enemy);

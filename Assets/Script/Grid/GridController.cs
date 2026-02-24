@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.GraphicsBuffer;
 
 public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 {
@@ -12,26 +11,26 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
 
     protected abstract int x { get; }//网格宽度
     protected abstract int y { get; }//网格高度
-    public Grid gridPrefab;//网格预制体索引
-    private List<Grid> grids;//该控制器下的网格
-    private List<Item> items;//该网格中的物品
+    public MyGrid gridPrefab;//网格预制体索引
+    private List<MyGrid> grids;//该控制器下的网格
+    protected List<Item> items;//该网格中的物品
 
     public List<Item> GetItems() => items;
 
     private void Awake()
     {
-        grids = new List<Grid>();
+        grids = new List<MyGrid>();
         items = new List<Item>();
         //初始化网格
         for(int i = 0; i < x; i++)
         {
             for(int j = 0; j < y; j++)
             {
-                Grid newgrid = Instantiate(gridPrefab, transform);
+                MyGrid newgrid = Instantiate(gridPrefab, transform);
                 newgrid.transform.localPosition = new Vector2(j * pixelSize, -i * pixelSize);
                 newgrid.name = "grid_" + j + "_" + i;
-                newgrid.GetComponent<Grid>().pos_x = j;
-                newgrid.GetComponent<Grid>().pos_y = i;
+                newgrid.GetComponent<MyGrid>().pos_x = j;
+                newgrid.GetComponent<MyGrid>().pos_y = i;
                 grids.Add(newgrid);
                 Debug.Log("创建" + newgrid.name);
             }
@@ -57,7 +56,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         MouseController.Instance.onGrid = null;
     }
     //寻找网格
-    public Grid FindGrid(int targetX, int targetY)
+    public MyGrid FindGrid(int targetX, int targetY)
     {
         // 提前检查坐标是否超出网格范围（X=列，Y=行）
         if (targetX < 0 || targetX >= this.y || targetY < 0 || targetY >= this.x)
@@ -77,7 +76,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     //添加一个物品到网格
     public bool AddItemToGrid(Item item)
     {
-        foreach (Grid grid in grids)
+        foreach (MyGrid grid in grids)
         {
             if (CheckCanAddItem(item, grid))
             {
@@ -88,9 +87,9 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
         return false;
     }
     //检查是否可以放置
-    public bool CheckCanAddItem(Item item,Grid originGrid)
+    public bool CheckCanAddItem(Item item, MyGrid originGrid)
     {
-        Grid currentGrid = originGrid;
+        MyGrid currentGrid = originGrid;
         for (int i = 0; i < item.GetOccupyCount(); i++)
         {
             // 计算当前格子的绝对坐标（原点+偏移）
@@ -98,7 +97,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
             int targetY = originGrid.pos_y + item.GetYAtIndex(i);
 
             // 1. 找目标格子
-            Grid targetGrid = FindGrid(targetX, targetY);
+            MyGrid targetGrid = FindGrid(targetX, targetY);
             if (targetGrid == null)
             {
                 Debug.Log($"物品{item.itemName}的格子({targetX},{targetY})超出网格范围，无法放置");
@@ -118,7 +117,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     }
 
     //添加物品到指定网格（使用传入 item 的占用偏移，确保旋转后的格子正确）
-    public void AddItemToTargetGrid(Item item, Grid originGrid)
+    public void AddItemToTargetGrid(Item item, MyGrid originGrid)
     {
         Item newitem = Instantiate(item, transform);//创建Item
         newitem.name = item.name;
@@ -135,7 +134,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
             int targetX = originGrid.pos_x + item.GetXAtIndex(i);
             int targetY = originGrid.pos_y + item.GetYAtIndex(i);
 
-            Grid targetGrid = FindGrid(targetX, targetY);
+            MyGrid targetGrid = FindGrid(targetX, targetY);
             if (targetGrid != null)
             {
                 targetGrid.isUsing = true;

@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using UnityEngine.EventSystems;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public abstract class ActiveItem : Item,IPointerDownHandler
 {
     protected int currentCD;
-    protected abstract int CD { get; }
+    protected abstract int CD { get; set; }
 
     protected void Start()
     {
@@ -14,7 +15,7 @@ public abstract class ActiveItem : Item,IPointerDownHandler
     //主动效果
     public abstract void ActiveAbility();
     //使用物品
-    public bool UseItem()
+    public bool CheckItemCD()
     {
         if(currentCD >= CD)
         {
@@ -26,22 +27,39 @@ public abstract class ActiveItem : Item,IPointerDownHandler
             return false;
         }
     }
-
-    public void ChangeCD(int change)
-    {
-        currentCD += change;
-    }
     //鼠标点击
     public virtual void OnPointerDown(PointerEventData eventData)
     {
         if (AttackController.Instance.isFighting)
         {
-            if (UseItem())
+            if (CheckItemCD())
             {
                 ActiveAbility();
                 SetAlpha(currentCD, CD);
+                EventManager.Instance.TriggerEvent(EventTypes.UseItemEvent, new UseItemEvent(this));
             }
         }
     }
 
+    public void SetItemCurrentCD(int num)
+    {
+        currentCD = num;
+        SetAlpha(currentCD, CD);
+    }
+
+    public int GetItemCurrentCD()
+    {
+        return currentCD;
+    }
+
+    public int GetItemCD()
+    {
+        return CD;
+    }
+
+    public void SetItemCD(int num)
+    {
+        CD = num;
+        SetAlpha(currentCD, CD);
+    }
 }

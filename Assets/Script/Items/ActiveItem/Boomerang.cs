@@ -10,13 +10,14 @@ public class Boomerang : ActiveItem
     private int[] _y = new int[] { 0, 0 ,1};
 
     private int damage = 2;
+    private int _CD = 3;
     public override int ItemID => 00002;
 
     public override string itemName => "回旋镖";
 
     public override string itemDescription => "使用时对敌人造成2点伤害";
 
-    protected override int CD => 5;
+    protected override int CD { get => _CD; set => _CD = value; }
 
     protected override int[] x { get => _x; set => _x = value; }
 

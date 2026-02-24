@@ -10,7 +10,7 @@ public class EventManager : MonoBehaviour
     //单例模式
     public static EventManager Instance { get; private set; }
     //事件字典
-    private Dictionary<EventTypes, Action<IEvent>> _eventBus;
+    private Dictionary<EventTypes, Action<IEvent>> _eventBus = new Dictionary<EventTypes, Action<IEvent>>();
 
     private void Awake()
     {
@@ -20,8 +20,7 @@ public class EventManager : MonoBehaviour
         }
         //切换场景不销毁
         DontDestroyOnLoad(gameObject);
-        //初始化字典
-        _eventBus = new Dictionary<EventTypes, Action<IEvent>>();
+
         Debug.Log("初始化事件监听器");
     }
 
@@ -47,6 +46,7 @@ public class EventManager : MonoBehaviour
         }
         else
         {
+            Debug.Log($"事件{type}被{listener}注册监听");
             _eventBus.Add(type, listener);
         }
     }

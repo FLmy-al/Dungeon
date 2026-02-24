@@ -19,7 +19,7 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
 
     //当前位置
     private GridController currentCanvas;//所在画布
-    private Grid currentGrid;//所在网格(原点)
+    private MyGrid currentGrid;//所在网格(原点)
     private RectTransform canvasTransform;//画布的rectTransform
     private RectTransform rectTransform;//rectTransform
 
@@ -40,12 +40,12 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
 
     // 2. 当前位置相关
     public GridController GetCurrentCanvas() => currentCanvas; // 获取所在GridController
-    public Grid GetCurrentGrid() => currentGrid; // 获取所在网格原点
+    public MyGrid GetCurrentGrid() => currentGrid; // 获取所在网格原点
     public RectTransform GetRectTransform() => rectTransform; // 获取自身RectTransform
 
     // 3. Setter方法（用于外部赋值，比如GridController中设置物品位置）
     public void SetCurrentCanvas(GridController canvas) => currentCanvas = canvas;
-    public void SetCurrentGrid(Grid grid) => currentGrid = grid;
+    public void SetCurrentGrid(MyGrid grid) => currentGrid = grid;
     public void SetCanvasTransform(RectTransform transform) => canvasTransform = transform;
 
     public Image GetImage() => image;

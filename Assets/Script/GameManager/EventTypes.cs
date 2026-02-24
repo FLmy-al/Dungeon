@@ -5,6 +5,7 @@ using UnityEngine;
 public enum EventTypes
 {
     FightStartEvent,//战斗开始
-    FightEndEvent
+    FightEndEvent,//战斗结束
+    UseItemEvent//使用物品
 }
  
