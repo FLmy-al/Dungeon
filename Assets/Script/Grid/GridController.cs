@@ -49,6 +49,7 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
     public void OnPointerEnter(PointerEventData eventData)
     {
         MouseController.Instance.onGrid = this;
+        transform.SetAsFirstSibling();
     }
     //鼠标离开
     public void OnPointerExit(PointerEventData eventData)
@@ -143,5 +144,6 @@ public abstract class GridController : MonoBehaviour,IPointerEnterHandler,IPoint
             }
         }
         items.Add(newitem);
+        Debug.Log($"将物品{newitem.name}添加到{items}中");
     }
 }

@@ -285,7 +285,7 @@ public abstract class Item : MonoBehaviour,IPointerEnterHandler,IPointerExitHand
             Debug.Log("已清理" + currentGrid.pos_x + x[i] + "_" + currentGrid.pos_y + y[i]);
         }
     }
-
+    //返回拖拽前位置
     private void ReturnToOriginalPosition()
     {
         if (currentCanvas != null && currentGrid != null)

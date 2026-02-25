@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class PackageManager : GridController
 {
